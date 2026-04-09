@@ -1,5 +1,10 @@
 package com.batch211.flashcart.serviceimpl;
+
 import java.util.List;
+
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
 
 import com.batch211.flashcart.dto.UserRequestDto;
 import com.batch211.flashcart.dto.UserResponseDto;
@@ -7,14 +12,13 @@ import com.batch211.flashcart.entities.User;
 import com.batch211.flashcart.repo.UserRepo;
 import com.batch211.flashcart.services.UserService;
 
+@Service
 public class UserServiceImpl implements UserService{
 
 	UserRepo userRepo;
 	
 	public UserServiceImpl(UserRepo userRepo) {
-
-		this.userRepo = userRepo;
-		
+		this.userRepo = userRepo;	
 	}
 
 	@Override
@@ -25,8 +29,10 @@ public class UserServiceImpl implements UserService{
 	
 	@Override
 	public List<UserResponseDto> allUser() {
-	
-		return null;
+		return userRepo.findAll()
+				.stream()
+				.map(this::mapToDto)
+				.collect(Collectors.toList());
 	}
 
 	@Override
