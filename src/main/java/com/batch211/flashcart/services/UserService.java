@@ -20,6 +20,6 @@ public interface UserService {
 	UserResponseDto createUser(UserRequestDto user);
 	List<UserResponseDto> allUser();
 	UserResponseDto getUserById(Long id);
-	UserRequestDto getUserByEmail(String email);
+	UserResponseDto getUserByEmail(String email);
 	
 }

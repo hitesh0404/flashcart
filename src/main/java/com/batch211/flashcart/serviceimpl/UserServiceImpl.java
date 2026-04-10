@@ -37,14 +37,16 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public UserResponseDto getUserById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
+		return mapToDto(
+				userRepo
+				.findById(id)
+				.orElseThrow(()->
+				new RuntimeException("User not Found with id "+id)));
 	}
 
 	@Override
-	public UserRequestDto getUserByEmail(String email) {
-		// TODO Auto-generated method stub
-		return null;
+	public UserResponseDto getUserByEmail(String email) {
+		return mapToDto(userRepo.findByEmail(email));
 	}
 	
 	private UserResponseDto mapToDto(User user) {
