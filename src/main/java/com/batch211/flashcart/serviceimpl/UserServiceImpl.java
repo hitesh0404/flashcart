@@ -4,6 +4,8 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.batch211.flashcart.dto.UserRequestDto;
@@ -16,14 +18,23 @@ import com.batch211.flashcart.services.UserService;
 public class UserServiceImpl implements UserService{
 
 	UserRepo userRepo;
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
 	
 	public UserServiceImpl(UserRepo userRepo) {
 		this.userRepo = userRepo;	
 	}
 
 	@Override
-	public UserResponseDto createUser(UserRequestDto user) {
-		return mapToDto(userRepo.save(mapToEntity(user)));
+	public UserResponseDto createUser(UserRequestDto userReq) {
+		if (!userReq.getPassword().equals(userReq.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
+        }
+		User user = mapToEntity(userReq);
+		user.setPassword(passwordEncoder.encode(userReq.getPassword()));
+		
+		return mapToDto(userRepo.save(user));
 	}
 
 	
