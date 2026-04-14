@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,7 @@ public class UserServiceImpl implements UserService{
         }
 		User user = mapToEntity(userReq);
 		user.setPassword(passwordEncoder.encode(userReq.getPassword()));
-		
+		user.setRole("ROLE_CUSTOMER");
 		return mapToDto(userRepo.save(user));
 	}
 
@@ -57,7 +58,9 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public UserResponseDto getUserByEmail(String email) {
-		return mapToDto(userRepo.findByEmail(email));
+		return mapToDto(userRepo.findByEmail(email)
+				.orElseThrow(()->new RuntimeException("User Not Found With given Email "+email)));
+	
 	}
 	
 	private UserResponseDto mapToDto(User user) {
