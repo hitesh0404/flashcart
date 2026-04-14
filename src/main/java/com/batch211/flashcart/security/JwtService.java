@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.function.Function;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -19,19 +18,19 @@ public class JwtService {
 
     // use env/props in real app; keep it long and random
     private static final String SECRET_KEY = "abcdabcdldjljnlnafrenfnefrflsjaimecmejfji21132423423";
-
-    public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
     public <T> T extractClaim(String token, Function<Claims, T> resolver) {
         final Claims claims = extractAllClaims(token);
         return resolver.apply(claims);
     }
+    public String extractUsername(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    
 
     public String generateToken(UserDetails userDetails) {
         long now = System.currentTimeMillis();
-         long expirationMs = 86400000;// 24 hour
+        long expirationMs = 86400000;// 24 hour
 
         return Jwts.builder()
                 .setSubject(userDetails.getUsername())
