@@ -62,15 +62,16 @@ public class UserServiceImpl implements UserService{
 				.orElseThrow(()->new RuntimeException("User Not Found With given Email "+email)));
 	
 	}
-	
-	private UserResponseDto mapToDto(User user) {
+	@Override
+	public UserResponseDto mapToDto(User user) {
 		UserResponseDto userRes = new UserResponseDto();
 		userRes.setEmail(user.getEmail());
 		userRes.setFname(user.getFname());
 		userRes.setLname(user.getLname());
 		return userRes;
 	}
-	private User mapToEntity(UserRequestDto userReq) {
+	@Override
+	public User mapToEntity(UserRequestDto userReq) {
 		User user = new User();
 		user.setEmail(userReq.getEmail());
 		user.setFname(userReq.getFname());
@@ -79,5 +80,6 @@ public class UserServiceImpl implements UserService{
 		return user;
 	}
 
+	
 	
 }

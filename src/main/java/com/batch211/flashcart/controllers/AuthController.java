@@ -36,7 +36,7 @@ public class AuthController {
 	@Autowired
 	private UserDetailServiceImpl customUserDetailsService;
 	
-    @PostMapping("/login")
+    @PostMapping("/login/")
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -49,7 +49,7 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponseDto(token,refreshToken));
     }
     
-    @PostMapping("/refresh")
+    @PostMapping("/refresh/")
     public ResponseEntity<RefreshTokenResponse> refresh(@RequestBody RefreshTokenRequest request) {
         String refreshToken = request.getRefreshToken();
         System.out.println(refreshToken);

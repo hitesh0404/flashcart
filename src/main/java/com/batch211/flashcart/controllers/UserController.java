@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.batch211.flashcart.dto.UserRequestDto;
 import com.batch211.flashcart.dto.UserResponseDto;
+import com.batch211.flashcart.entities.User;
 import com.batch211.flashcart.services.UserService;
 
 import jakarta.validation.Valid;
@@ -14,6 +15,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -50,23 +53,14 @@ public class UserController {
 	@PostMapping("/")
 	public ResponseEntity<UserResponseDto> createUser
 								(@Valid @RequestBody UserRequestDto userReq) {
-		
 		return ResponseEntity
 				.status(HttpStatus.CREATED)
 				.body(userService.createUser(userReq));
 	}
 	
+	@GetMapping("/profile/")
+	public ResponseEntity<UserResponseDto> getUserProfile(@AuthenticationPrincipal UserDetails user) {
+		return ResponseEntity.ok(userService.mapToDto((User)user));
+	}
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
