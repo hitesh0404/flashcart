@@ -23,4 +23,5 @@ public class UserRequestDto {
 	private String password;
 	@NotNull
 	private String confirmPassword;
+	private String role;
 }

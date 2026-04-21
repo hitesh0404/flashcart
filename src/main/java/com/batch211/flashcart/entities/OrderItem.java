@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class OrderItem {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@ManyToOne
@@ -27,7 +27,7 @@ public class OrderItem {
 	private Order order;
 	
 	@ManyToOne
-	@JsonBackReference
+//	@JsonBackReference("product-orderitems")
 	private Product product;
 	
 	

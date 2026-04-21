@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 public class Order {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int orderId;
 	
 	private String status="PENDING";  //completed

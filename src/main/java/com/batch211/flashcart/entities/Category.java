@@ -3,6 +3,7 @@ package com.batch211.flashcart.entities;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,14 +22,14 @@ import lombok.NoArgsConstructor;
 public class Category {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	private int id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 	
 	@Column(nullable = false,length = 150)
 	private String name;
 	
 	@ManyToMany(mappedBy = "categories")
-	@JsonBackReference
+//	@JsonIgnoreProperties("categories") // Prevents infinite loop in Product
 	private List<Product> products;
 
 }

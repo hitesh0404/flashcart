@@ -3,6 +3,8 @@ package com.batch211.flashcart.entities;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class Product {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@Column(nullable = false,length = 100)
@@ -35,20 +37,18 @@ public class Product {
 	private int price;
 	
 	@ManyToMany
-	@JsonManagedReference
+	@JsonIgnore // Prevents infinite loop by ignoring products list in Category
 	private List<Category> categories;
-	
-	@OneToMany(mappedBy = "product")
-	@JsonBackReference
-	private List<Cart> carts;
-	
-	@OneToMany(mappedBy = "product")
-	@JsonBackReference
-	private List<OrderItem> orderItems;
-	
-	@ManyToOne
-	@JsonBackReference
-	private Brand brand;
-	
 
+	@OneToMany(mappedBy = "product")
+	@JsonIgnore   // Prevents infinite loop in Cart
+	private List<Cart> carts;
+
+	@OneToMany(mappedBy = "product")
+	@JsonIgnore // Prevents infinite loop in OrderItem
+	private List<OrderItem> orderItems;
+
+	@ManyToOne
+	@JsonIgnoreProperties({"products", "handler", "hibernateLazyInitializer"}) 
+	private Brand brand;
 }

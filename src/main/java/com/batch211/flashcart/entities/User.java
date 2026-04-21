@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,12 +25,14 @@ import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 
 @AllArgsConstructor
 @Data
 @Entity
 @NoArgsConstructor
+
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = { "email" }))
 public class User implements UserDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,13 +56,18 @@ public class User implements UserDetails {
 	public String getUsername() {
 		return email;
 	}
+	@ToString.Exclude
+	@OneToMany(mappedBy = "user")
+	@JsonManagedReference
+	private List<Order> orders;
+	@ToString.Exclude
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	private List<Address> addresses;
+	
+	@ToString.Exclude
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	private List<Cart> carts;
-
-	@OneToMany(mappedBy = "user")
-	private List<Order> orders;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private List<Address> addresses;
 }

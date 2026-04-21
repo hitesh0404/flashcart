@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api/auth")
 public class UserController {
 	@Autowired
 	UserService userService;
@@ -50,7 +50,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.getUserByEmail(email));
 	}
 	 
-	@PostMapping("/")
+	@PostMapping("/register")
 	public ResponseEntity<UserResponseDto> createUser
 								(@Valid @RequestBody UserRequestDto userReq) {
 		return ResponseEntity
@@ -60,6 +60,11 @@ public class UserController {
 	
 	@GetMapping("/profile/")
 	public ResponseEntity<UserResponseDto> getUserProfile(@AuthenticationPrincipal UserDetails user) {
+		return ResponseEntity.ok(userService.mapToDto((User)user));
+	}
+
+	@GetMapping("/me/")
+	public ResponseEntity<UserResponseDto> getUserDetails(@AuthenticationPrincipal UserDetails user) {
 		return ResponseEntity.ok(userService.mapToDto((User)user));
 	}
 

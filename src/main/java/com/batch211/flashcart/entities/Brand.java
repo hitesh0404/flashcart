@@ -2,6 +2,7 @@ package com.batch211.flashcart.entities;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Entity;
@@ -15,10 +16,10 @@ import lombok.Data;
 @Data
 public class Brand {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     @OneToMany(mappedBy = "brand")
-    @JsonManagedReference
+    @JsonIgnoreProperties("brand") // Prevents infinite loop in Product
     private List<Product> products;
 }

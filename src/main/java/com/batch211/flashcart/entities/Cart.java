@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class Cart {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     private int quantity;
@@ -29,6 +29,6 @@ public class Cart {
     private User user;
 
     @ManyToOne
-    @JsonManagedReference
+//    @JsonBackReference("product-cart")
     private Product product;
 }

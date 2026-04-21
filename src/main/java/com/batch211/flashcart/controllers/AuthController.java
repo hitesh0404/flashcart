@@ -1,5 +1,6 @@
 package com.batch211.flashcart.controllers;
 
+import com.batch211.flashcart.serviceimpl.UserServiceImpl;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.batch211.flashcart.dto.LoginRequestDto;
@@ -19,14 +20,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 
 @RestController
-@RequestMapping("api/user")
+@RequestMapping("api/auth")
+@CrossOrigin(origins = "http://localhost:5173") 
 public class AuthController {
+	private final UserServiceImpl userServiceImpl;
 	@Autowired
     private  AuthenticationManager authenticationManager;
 	@Autowired
@@ -35,8 +39,12 @@ public class AuthController {
     private  UserRepo userRepo;
 	@Autowired
 	private UserDetailServiceImpl customUserDetailsService;
+
+	AuthController(UserServiceImpl userServiceImpl) {
+		this.userServiceImpl = userServiceImpl;
+	}
 	
-    @PostMapping("/login/")
+    @PostMapping("/login")
     public ResponseEntity<LoginResponseDto> login(@Valid @RequestBody LoginRequestDto request) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
@@ -46,7 +54,8 @@ public class AuthController {
         System.out.println(userDetails);
         String token = jwtService.generateToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
-        return ResponseEntity.ok(new LoginResponseDto(token,refreshToken));
+        
+        return ResponseEntity.ok(new LoginResponseDto(token,refreshToken,userServiceImpl.mapToDto((User)userDetails)));
     }
     
     @PostMapping("/refresh/")

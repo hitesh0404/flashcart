@@ -12,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
 
 
 @Component
@@ -25,8 +26,20 @@ public class SecurityConfig {
 		
 		httpSecurity
 		.csrf(csrf->csrf.disable())
+		.cors(cors -> cors.configurationSource(request -> {
+            CorsConfiguration config = new CorsConfiguration();
+            config.setAllowCredentials(true);
+            config.addAllowedOrigin("http://localhost:5173");
+            config.addAllowedOrigin("http://127.0.0.1:5173");
+            config.addAllowedHeader("*");
+            config.addAllowedMethod("*");
+            return config;
+        }))
 		.authorizeHttpRequests(req->req
-		.requestMatchers(HttpMethod.POST,"/api/user/","/api/user/login/").permitAll()
+		.requestMatchers(HttpMethod.POST,"/api/auth/register","/api/auth/login").permitAll()
+		.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
+		.requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
+	    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
 		.anyRequest().authenticated())
 		.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return httpSecurity.build();
