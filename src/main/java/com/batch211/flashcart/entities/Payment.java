@@ -30,6 +30,7 @@ public class Payment {
 	
 	private String razorpayOrderId;
 	private String razorpayPaymentId;
+	private String razorpayPaymentSign;
 	
 	@Enumerated(EnumType.STRING)
 	private PaymentStatus paymentStatus;
