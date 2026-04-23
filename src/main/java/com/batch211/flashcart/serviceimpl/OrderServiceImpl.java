@@ -1,38 +1,52 @@
 package com.batch211.flashcart.serviceimpl;
 
+import com.batch211.flashcart.dto.OrderCreateResponceDto;
 import com.batch211.flashcart.entities.*;
+import com.batch211.flashcart.enums.PaymentStatus;
 import com.batch211.flashcart.repo.AddressRepository;
 import com.batch211.flashcart.repo.CartRepository;
 import com.batch211.flashcart.repo.OrderItemRepository;
 import com.batch211.flashcart.repo.OrderRepository;
+import com.batch211.flashcart.repo.PaymentRepository;
 import com.batch211.flashcart.services.OrderService;
+
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-
+import com.razorpay.RazorpayClient;
+import com.razorpay.RazorpayException;
 @Service
 @Transactional
 public class OrderServiceImpl implements OrderService {
+
+	
+	private static final String KEY_ID = "rzp_test_SeYjHljAhVr7Lm"; // Replace with your Key ID
+    private static final String KEY_SECRET = "qpaH6OKim61MYjdjvGoq1sMZ"; // Replace with your Key Secret
 
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final CartRepository cartRepository;
     private final AddressRepository addressRepository;
-
+    private final PaymentRepository payRepo;
+    
     public OrderServiceImpl(OrderRepository orderRepository,
                             OrderItemRepository orderItemRepository,
                             CartRepository cartRepository,
-                            AddressRepository addressRepository) {
+                            AddressRepository addressRepository,
+                            PaymentRepository payRepo) {
         this.orderRepository = orderRepository;
         this.orderItemRepository = orderItemRepository;
         this.cartRepository = cartRepository;
         this.addressRepository = addressRepository;
+        this.payRepo =  payRepo;
     }
 
     @Override
-    public Order placeOrder(User user, Long addressId) {
+    public OrderCreateResponceDto placeOrder(User user, Long addressId) {
+    	
         List<Cart> cartItems = cartRepository.findByUser(user);
         if (cartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty");
@@ -64,11 +78,28 @@ public class OrderServiceImpl implements OrderService {
         orderItemRepository.saveAll(orderItems);
 
         savedOrder.setOrderItems(orderItems);
-
+        
+        try {
+			RazorpayClient razorpay = new RazorpayClient(KEY_ID, KEY_SECRET);
+			JSONObject orderRequest = new JSONObject();
+	        
+	        orderRequest.put("amount", amount * 100);
+	        orderRequest.put("currency", "INR");
+	        com.razorpay.Order rzorder = razorpay.orders.create(orderRequest);
+	        order.setRazorpayOrderId(rzorder.get("id"));
+	        payRepo.save(new Payment(null, savedOrder, user, amount, 
+	        		rzorder.get("id"), null, null, PaymentStatus.PENDING));
+	        return new OrderCreateResponceDto(rzorder,savedOrder);
+        } catch (RazorpayException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+        
         // clear cart
         cartRepository.deleteAll(cartItems);
 
-        return savedOrder;
+        return new OrderCreateResponceDto(null,savedOrder);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.batch211.flashcart.controllers;
 
+import com.batch211.flashcart.dto.OrderCreateResponceDto;
 import com.batch211.flashcart.entities.Order;
 import com.batch211.flashcart.entities.User;
 import com.batch211.flashcart.services.OrderService;
@@ -22,11 +23,11 @@ public class OrderController {
 
     // Place order using current cart
     @PostMapping
-    public ResponseEntity<Order> placeOrder(
+    public ResponseEntity<OrderCreateResponceDto> placeOrder(
             @AuthenticationPrincipal User user,
             @RequestParam Long addressId
     ) {
-        Order order = orderService.placeOrder(user, addressId);
+        OrderCreateResponceDto order = orderService.placeOrder(user, addressId);
         return ResponseEntity.ok(order);
     }
 

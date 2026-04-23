@@ -63,7 +63,7 @@ public class UserController {
 		return ResponseEntity.ok(userService.mapToDto((User)user));
 	}
 
-	@GetMapping("/me/")
+	@GetMapping("/me")
 	public ResponseEntity<UserResponseDto> getUserDetails(@AuthenticationPrincipal UserDetails user) {
 		return ResponseEntity.ok(userService.mapToDto((User)user));
 	}
