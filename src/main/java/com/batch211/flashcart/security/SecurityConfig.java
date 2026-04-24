@@ -40,6 +40,7 @@ public class SecurityConfig {
 		.requestMatchers(HttpMethod.GET, "/api/products/**").permitAll()
 		.requestMatchers(HttpMethod.GET, "/api/brands/**").permitAll()
 	    .requestMatchers(HttpMethod.GET, "/api/categories/**").permitAll()
+	    .requestMatchers(HttpMethod.POST, "/api/payments/complete").permitAll()
 		.anyRequest().authenticated())
 		.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 		return httpSecurity.build();

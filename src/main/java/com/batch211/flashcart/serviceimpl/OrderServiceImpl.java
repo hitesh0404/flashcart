@@ -59,15 +59,15 @@ public class OrderServiceImpl implements OrderService {
         int amount = cartItems.stream()
                 .mapToInt(ci -> ci.getProduct().getPrice() * ci.getQuantity())
                 .sum();
-
+        
         Order order = new Order();
         order.setUser(user);
         order.setStatus("PENDING");
         order.setAmount(amount);
         order.setAddress(address);
-
+        
         Order savedOrder = orderRepository.save(order);
-
+        
         List<OrderItem> orderItems = new ArrayList<>();
         for (Cart cartItem : cartItems) {
             OrderItem oi = new OrderItem();
@@ -75,8 +75,9 @@ public class OrderServiceImpl implements OrderService {
             oi.setProduct(cartItem.getProduct());
             orderItems.add(oi);
         }
+        
         orderItemRepository.saveAll(orderItems);
-
+        
         savedOrder.setOrderItems(orderItems);
         
         try {
@@ -85,10 +86,14 @@ public class OrderServiceImpl implements OrderService {
 	        
 	        orderRequest.put("amount", amount * 100);
 	        orderRequest.put("currency", "INR");
+	        
 	        com.razorpay.Order rzorder = razorpay.orders.create(orderRequest);
 	        order.setRazorpayOrderId(rzorder.get("id"));
+	        
 	        payRepo.save(new Payment(null, savedOrder, user, amount, 
 	        		rzorder.get("id"), null, null, PaymentStatus.PENDING));
+	        cartRepository.deleteAll(cartItems);
+
 	        return new OrderCreateResponceDto(rzorder,savedOrder);
         } catch (RazorpayException e) {
 			// TODO Auto-generated catch block

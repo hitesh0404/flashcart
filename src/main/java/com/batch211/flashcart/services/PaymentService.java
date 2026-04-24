@@ -6,7 +6,7 @@ import com.batch211.flashcart.enums.PaymentStatus;
 
 public interface PaymentService {
     Payment recordPaymentResult(User user,
-                                Integer orderId,
+                           
                                 String razorpayOrderId,
                                 String razorpayPaymentId,
                                 PaymentStatus status);

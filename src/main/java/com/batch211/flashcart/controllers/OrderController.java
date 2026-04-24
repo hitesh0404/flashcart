@@ -27,7 +27,9 @@ public class OrderController {
             @AuthenticationPrincipal User user,
             @RequestParam Long addressId
     ) {
+    	
         OrderCreateResponceDto order = orderService.placeOrder(user, addressId);
+      
         return ResponseEntity.ok(order);
     }
 

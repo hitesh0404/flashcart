@@ -26,29 +26,32 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public Payment recordPaymentResult(User user,
-                                       Integer orderId,
+                                       
                                        String razorpayOrderId,
                                        String razorpayPaymentId,
                                        PaymentStatus status) {
 
-        Order order = orderRepository.findById(orderId)
+        Order order = orderRepository.findByRazorpayOrderId(razorpayOrderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
         if (!order.getUser().getId().equals(user.getId())) {
             throw new RuntimeException("Unauthorized order access");
         }
-
+        Payment payment = paymentRepository.findByRazorpayOrderId(razorpayOrderId)
+                .orElseThrow(() -> new RuntimeException("Payment not found for order"));
         // update order
-        order.setRazorpayOrderId(razorpayOrderId);
         order.setPaymentId(razorpayPaymentId);
         order.setStatus(status == PaymentStatus.SUCCESS ? "COMPLETED" : "FAILED");
-
-        Payment payment = new Payment();
-        payment.setOrderId(order);
-        payment.setUser(user);
-        payment.setAmount(order.getAmount());
-        payment.setRazorpayOrderId(razorpayOrderId);
+        
         payment.setRazorpayPaymentId(razorpayPaymentId);
         payment.setPaymentStatus(status);
+
+//        Payment payment = new Payment();
+//        payment.setOrderId(order);
+//        payment.setUser(user);
+//        payment.setAmount(order.getAmount());
+//        payment.setRazorpayOrderId(razorpayOrderId);
+//        payment.setRazorpayPaymentId(razorpayPaymentId);
+//        payment.setPaymentStatus(status);
 
         return paymentRepository.save(payment);
     }
